@@ -27,13 +27,31 @@ namespace RecipeUnitTests
         [TestMethod]
         public void GetRecipesByIngredient_ValidName_ReturnsRecipesWithIngredient()
         {
+            // arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            string ingredientName = "Eggs";
+            int recipeCount = 1; 
+
+            // act
+            HashSet<Recipe> recipes = bll.GetRecipesByIngredient(null, ingredientName);
+
+            // assert
+            Assert.AreEqual(recipeCount, recipes.Count);
 
         }
 
         [TestMethod]
         public void GetRecipesByIngredient_InvalidId_ReturnsNull()
         {
+            // arrange
+            BusinessLogicLayer bll = _initializeBusinessLogic();
+            int invalidIngredientId = -1; // Replace with an invalid ingredient ID
 
+            // act
+            HashSet<Recipe> recipes = bll.GetRecipesByIngredient(invalidIngredientId, null);
+
+            // assert
+            Assert.AreEqual(0, recipes.Count);
         }
     }
 }

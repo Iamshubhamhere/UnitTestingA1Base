@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestingA1Base", "UnitTestingA1Base\UnitTestingA1Base.csproj", "{74F53996-A2F8-40FE-A36F-5966FEB18FE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeUnitTests", "RecipeUnitTests\RecipeUnitTests.csproj", "{C52F8C53-29D2-4A54-8DD9-8676213C52E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeUnitTests", "RecipeUnitTests\RecipeUnitTests.csproj", "{C52F8C53-29D2-4A54-8DD9-8676213C52E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

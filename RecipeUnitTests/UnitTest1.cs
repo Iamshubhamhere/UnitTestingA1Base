@@ -29,8 +29,8 @@ namespace RecipeUnitTests
         {
             // arrange
             BusinessLogicLayer bll = _initializeBusinessLogic();
-            string ingredientName = "Eggs";
-            int recipeCount = 1; 
+            string ingredientName = "Salmon";
+            int recipeCount = 2; 
 
             // act
             HashSet<Recipe> recipes = bll.GetRecipesByIngredient(null, ingredientName);

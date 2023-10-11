@@ -15,15 +15,32 @@ namespace UnitTestingA1Base.Data
         {
             Ingredient ingredient;
             HashSet<Recipe> recipes = new HashSet<Recipe>();
-
             if (id != null)
             {
                 ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Id == id);
+                if (ingredient == null)
+                {
+                    return recipes;
+                }
+            }
+            else if (name != null)
+            {
+                ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Name.Contains(name));
+                if (ingredient == null)
+                {
+                    return recipes;
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("Either ID or Name must be provided.");
+            }
+           
 
                 HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients.Where(rI => rI.IngredientId == ingredient.Id).ToHashSet();
 
                 recipes = _appStorage.Recipes.Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id)).ToHashSet();
-            }
+            
 
             return recipes;
         }

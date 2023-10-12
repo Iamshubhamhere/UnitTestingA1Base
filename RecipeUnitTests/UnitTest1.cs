@@ -225,5 +225,18 @@ namespace RecipeUnitTests
             // Assert
             Assert.AreEqual(11, appStorage.Recipes.Count);
         }
+        [TestMethod]
+        public void DeleteRecipe_NoParameters_ThrowsArgumentException()
+        {
+            // Arrange
+            AppStorage appStorage = new AppStorage();
+            BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => bll.DeleteRecipe(null, null));
+        }
     }
+
+  
 }
+

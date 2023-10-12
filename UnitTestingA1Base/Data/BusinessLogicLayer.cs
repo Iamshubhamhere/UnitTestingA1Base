@@ -13,79 +13,148 @@ namespace UnitTestingA1Base.Data
         }
         public HashSet<Recipe> GetRecipesByIngredient(int? id, string? name)
         {
-            Ingredient ingredient;
-            HashSet<Recipe> recipes = new HashSet<Recipe>();
-            if (id != null)
-            {
-                ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Id == id);
-                if (ingredient == null)
+            try {
+                Ingredient ingredient;
+                HashSet<Recipe> recipes = new HashSet<Recipe>();
+                if (id != null)
                 {
+                    ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Id == id);
+
+                    if (ingredient == null)
+                    {
+                        return null;
+                    }
+                    HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients.Where(rI => rI.IngredientId == ingredient.Id).ToHashSet();
+
+                    recipes = _appStorage.Recipes.Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id)).ToHashSet();
+                    return recipes;
+                }
+                else if (name != null)
+                {
+                    ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Name.Contains(name));
+
+                    if (ingredient == null)
+                    {
+                        return null;
+                    }
+                    HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients.Where(rI => rI.IngredientId == ingredient.Id).ToHashSet();
+
+                    recipes = _appStorage.Recipes.Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id)).ToHashSet();
                     return recipes;
                 }
             }
-            else if (name != null)
-            {
-                ingredient = _appStorage.Ingredients.FirstOrDefault(i => i.Name.Contains(name));
-                if (ingredient == null)
-                {
-                    return recipes;
-                }
-            }
-            else
-            {
+            catch (Exception ex) {
                 throw new ArgumentNullException("Either ID or Name must be provided.");
             }
            
-
-                HashSet<RecipeIngredient> recipeIngredients = _appStorage.RecipeIngredients.Where(rI => rI.IngredientId == ingredient.Id).ToHashSet();
-
-                recipes = _appStorage.Recipes.Where(r => recipeIngredients.Any(ri => ri.RecipeId == r.Id)).ToHashSet();
-            
-
-            return recipes;
+          
+            return null;
         }
 
         public HashSet<Recipe> GetRecipeByDiet(int? id, string? name)
         {
-            HashSet<Recipe> recipes = new HashSet<Recipe>();
-
-            if (id != null)
+            try
             {
-                DietaryRestriction dietaryRestriction = _appStorage.DietaryRestrictions.FirstOrDefault(dr => dr.Id == id);
-
-                if (dietaryRestriction != null)
+                HashSet<Recipe> recipes = new HashSet<Recipe>();
+                if(id == null)
                 {
-                    HashSet<int> ingredientRestrictions = _appStorage.IngredientRestrictions
-                        .Where(ir => ir.DietaryRestrictionId == dietaryRestriction.Id)
-                        .Select(ir => ir.IngredientId)
-                        .ToHashSet();
+                    return null;
+                }
 
-                    HashSet<int> recipeIds = _appStorage.RecipeIngredients
-                        .Where(ri => ingredientRestrictions.Contains(ri.IngredientId))
-                        .Select(ri => ri.RecipeId)
-                        .ToHashSet();
+                if (id != null || !string.IsNullOrEmpty(name))
+                {
+                    DietaryRestriction dietaryRestriction;
 
-                    recipes = _appStorage.Recipes
-                        .Where(r => recipeIds.Contains(r.Id))
-                        .ToHashSet();
+                    if (id != null)
+                    {
+                        dietaryRestriction = _appStorage.DietaryRestrictions.FirstOrDefault(dr => dr.Id == id);
+                        if(dietaryRestriction  == null) {
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        dietaryRestriction = _appStorage.DietaryRestrictions.FirstOrDefault(dr => dr.Name.Contains(name));
+                        if (dietaryRestriction == null)
+                        {
+                            return null;
+                        }
+                    }
+
+                    
+                    if (dietaryRestriction != null)
+                    {
+                        HashSet<int> ingredientRestrictions = _appStorage.IngredientRestrictions
+                            .Where(ir => ir.DietaryRestrictionId == dietaryRestriction.Id)
+                            .Select(ir => ir.IngredientId)
+                            .ToHashSet();
+
+                        if (ingredientRestrictions.Count > 0)
+                        {
+                            HashSet<int> recipeIds = _appStorage.RecipeIngredients
+                                .Where(ri => ingredientRestrictions.Contains(ri.IngredientId))
+                                .Select(ri => ri.RecipeId)
+                                .ToHashSet();
+
+                            if (recipeIds.Count > 0)
+                            {
+                                recipes = _appStorage.Recipes
+                                    .Where(r => recipeIds.Contains(r.Id))
+                                    .ToHashSet();
+                            }
+                        }
+                    }
+
+                    return recipes;
+                }
+                else
+                {
+                    return null; 
                 }
             }
-
-            return recipes;
+            catch (Exception ex)
+            {
+               
+                throw new ForbiddenException("Not Found", ex) ;
+            }
         }
 
 
         public HashSet<Recipe> GetAllRecipes(int? id, string? name)
         {
-            HashSet<Recipe> recipes = new HashSet<Recipe>();
-
-            if (id != null || !string.IsNullOrWhiteSpace(name))
+            try
             {
-                recipes = _appStorage.Recipes
-                    .Where(r => id.HasValue ? r.Id == id : !string.IsNullOrWhiteSpace(name) && r.Name.Contains(name))
-                    .ToHashSet();
+                HashSet<Recipe> recipes = new HashSet<Recipe>();
+
+                if (id != null )
+                {
+                    recipes = _appStorage.Recipes
+                        .Where(r => r.Id == id).ToHashSet(); 
+                       
+                    if (recipes == null)
+                    {
+                        return null;
+                    }
+                    return recipes;
+                }
+                else if(name != null) 
+                {
+                    recipes = _appStorage.Recipes.Where(r=> r.Name.Contains(name)).ToHashSet();
+                    if (recipes == null)
+                    {
+                        return null;
+                    }
+                    return recipes;
+                }
+                else
+                {
+                    return null;
+                }
+            }catch(Exception ex)
+            {
+                throw new ArgumentNullException(nameof(id), ex);
             }
-            return recipes;
+            return null;
         }
 
         public void AddRecipeWithIngredient(Recipe recipe, List<Ingredient> ingredient)
